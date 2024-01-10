@@ -119,7 +119,7 @@ const deleteThoseFileSimultaneously = () => {
 
   const deleteFile = (filename, callback) => {
     console.log("FileName ====> ", filename);
-    fs.unlink(filename, (err) => {
+    fs.unlink( path.join(__dirname , filename) , (err) => {
       if (err) {
         callback(`Error deleting ${filename}: ${err}`);
       } else {
@@ -134,9 +134,9 @@ const deleteThoseFileSimultaneously = () => {
         callback(`Error reading filenames.txt: ${readErr}`);
         return;
       }
-
+      console.log("Data =>", data);
       const filenames = data.split("\n").map((filename) => filename.trim());
-console.log("Filenames ==> "  , filenames );
+      console.log("Filenames ==> ", filenames);
       // Counter to keep track of completed deletions
       let deletedCount = 0;
 
