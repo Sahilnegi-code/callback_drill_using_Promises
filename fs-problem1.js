@@ -1,47 +1,54 @@
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 
-
-
-const createDirectoryAndJsonFiles = ( absolutePathOfRandomDirectory ,randomNumberOfFiles , cb) => {
+const createDirectoryAndJsonFiles = (
+  absolutePathOfRandomDirectory,
+  randomNumberOfFiles
+) => {
   const directoryPath = absolutePathOfRandomDirectory;
-  fs.mkdir(directoryPath, { recursive: true }, (err) => {
-    if (err) {
-      console.error("Error creating directory:", err);
-    } else {
-      console.log("Directory is created");
 
-      for (let index = 0; index < randomNumberOfFiles; index++) {
-        const filePath = path.join(directoryPath, `File${index}.json`);
-        const jsonData = { key: `value${index}` };
+  fs.mkdir(directoryPath, { recursive: true }).then(()=>{
 
-        fs.writeFile(filePath, JSON.stringify(jsonData), (err) => {
+    for (let index = 0; index < randomNumberOfFiles; index++) {
+      const filePath = path.join(directoryPath, `File${index}.json`);
+      const jsonData = { key: `value${index}` };
+
+      fs.writeFile(filePath, JSON.stringify(jsonData), (err) => {
+        new Promise((res, rej) => {
           if (err) {
-            console.error(`Error creating file ${filePath}:`, err);
+            rej(err);
           } else {
-            console.log(`File ${filePath} is created`);
+            res(" Newly created ");
           }
-        });
-
-        cb( absolutePathOfRandomDirectory ,randomNumberOfFiles );
-      }
+        })
+          .then(() => {
+            deleteThoseFileSimultaneously(index);
+          })
+          .catch((err) => {
+            console.log("Error =>", err);
+          });
+      });
     }
-  });
+    
+  })
+  . catch((err)=>{
+    console.log(err);
+  }  )
+
 };
 
-const deleteThoseFileSimultaneously = ( absolutePathOfRandomDirectory ,randomNumberOfFiles) => {
-  const directoryPath = absolutePathOfRandomDirectory;
-  for (let index = 0; index < randomNumberOfFiles; index++) {
-    const filePath = path.join(directoryPath, `File${index}.json`);
+const deleteThoseFileSimultaneously = (index) => {
+  const directoryPath = path.join(__dirname, "./folder");
 
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.log("Not Deleted");
-      } else {
-        console.log(`File ${filePath} has been deleted.`);
-      }
-    });
-  }
+  const filePath = path.join(directoryPath, `File${index}.json`);
+
+  fs.unlink(filePath)
+  .then((val) => {
+    console.log(val);
+  })
+  .catch((err) => {
+    console.log("err  --> ", err);
+  });
 };
 
 module.exports = { createDirectoryAndJsonFiles, deleteThoseFileSimultaneously };

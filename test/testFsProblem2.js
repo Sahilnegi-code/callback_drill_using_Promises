@@ -20,4 +20,4 @@ const executeFunctions = () => {
 
 };
 
-executeFunctions(absolutePathOfRandomDirectory, randomNumberOfFiles);
+executeFunctions();
